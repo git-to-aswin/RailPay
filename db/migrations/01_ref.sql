@@ -81,3 +81,16 @@ CREATE TABLE IF NOT EXISTS ref.railpay_passes (
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_railpay_pass__status_active ON ref.railpay_passes(zone_count, is_zone_1, is_zone_2, status_active);
+
+-- 6) railpay_card_types
+CREATE TABLE IF NOT EXISTS ref.railpay_card_types (
+    card_type_id SMALLINT PRIMARY KEY,
+    card_type_name VARCHAR(25) NOT NULL UNIQUE,
+    description TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_railpay_card_types__is_active ON ref.railpay_card_types(card_type_id, is_active);
