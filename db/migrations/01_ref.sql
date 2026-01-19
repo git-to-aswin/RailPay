@@ -10,9 +10,9 @@ CREATE TABLE IF NOT EXISTS ref.travel_zones (
 
 -- 2) station_zones
 CREATE TABLE IF NOT EXISTS ref.stations (
-  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  id BIGINT GENERATED ALWAYS AS IDENTITY,
 
-  station_id SMALLINT NOT NULL,
+  station_id SMALLINT NOT NULL PRIMARY KEY,
   station_name VARCHAR(25) NOT NULL,
   zone_id    SMALLINT NOT NULL REFERENCES ref.travel_zones(zone_id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -87,9 +87,10 @@ CREATE TABLE IF NOT EXISTS ref.railpay_card_types (
     card_type_id SMALLINT PRIMARY KEY,
     card_type_name VARCHAR(25) NOT NULL UNIQUE,
     description TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 -- Indexes for performance
@@ -106,7 +107,7 @@ CREATE TABLE IF NOT EXISTS ref.rail_routes (
 -- 8) route_stations
 CREATE TABLE IF NOT EXISTS ref.rail_route_stations (
   route_id INT NOT NULL REFERENCES ref.rail_routes(route_id) ON DELETE CASCADE,
-  station_id SMALLINT NOT NULL REFERENCES ref.stations(station_id),
+  station_id SMALLINT NOT NULL REFERENCES ref.stations(station_id) ON DELETE CASCADE,
   stop_sequence SMALLINT NOT NULL,
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
