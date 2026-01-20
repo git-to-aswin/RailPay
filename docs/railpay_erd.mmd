@@ -1,0 +1,251 @@
+erDiagram
+
+card_rail_cards {
+  integer balance_cents
+  bigint card_id PK
+  character_varying(16) card_number
+  smallint card_type_id
+  timestamp_with_time_zone created_at
+  timestamp_with_time_zone last_used_at
+  timestamp_with_time_zone updated_at
+}
+
+card_rail_passes {
+  smallint bonus_days
+  bigint card_id
+  timestamp_with_time_zone created_at
+  bigint pass_id PK
+  integer price_cents
+  timestamp_with_time_zone purchased_at
+  interval purchasing_interval
+  text status_active
+  timestamp_with_time_zone updated_at
+  timestamp_with_time_zone valid_from
+  tstzrange valid_range
+  timestamp_with_time_zone valid_to
+}
+
+card_railpass_zones {
+  timestamp_with_time_zone created_at
+  bigint id PK
+  bigint pass_id
+  timestamp_with_time_zone updated_at
+  smallint zone_id
+}
+
+journey_rail_journey_fares {
+  timestamp_with_time_zone created_at PK
+  smallint end_zone
+  timestamp_with_time_zone fare_calculated_at
+  integer fare_cents
+  bigint fare_id PK
+  text fare_reason
+  bigint journey_id
+  timestamp_with_time_zone journey_started_at
+  smallint start_zone
+  timestamp_with_time_zone updated_at
+  smallint zones_travelled
+}
+
+journey_rail_journey_fares_2026_01 {
+  timestamp_with_time_zone created_at PK
+  smallint end_zone
+  timestamp_with_time_zone fare_calculated_at
+  integer fare_cents
+  bigint fare_id PK
+  text fare_reason
+  bigint journey_id
+  timestamp_with_time_zone journey_started_at
+  smallint start_zone
+  timestamp_with_time_zone updated_at
+  smallint zones_travelled
+}
+
+journey_rail_journey_fares_2026_02 {
+  timestamp_with_time_zone created_at PK
+  smallint end_zone
+  timestamp_with_time_zone fare_calculated_at
+  integer fare_cents
+  bigint fare_id PK
+  text fare_reason
+  bigint journey_id
+  timestamp_with_time_zone journey_started_at
+  smallint start_zone
+  timestamp_with_time_zone updated_at
+  smallint zones_travelled
+}
+
+journey_rail_journey_fares_default {
+  timestamp_with_time_zone created_at PK
+  smallint end_zone
+  timestamp_with_time_zone fare_calculated_at
+  integer fare_cents
+  bigint fare_id PK
+  text fare_reason
+  bigint journey_id
+  timestamp_with_time_zone journey_started_at
+  smallint start_zone
+  timestamp_with_time_zone updated_at
+  smallint zones_travelled
+}
+
+journey_rail_journeys {
+  bigint card_id
+  timestamp_with_time_zone created_at
+  smallint end_station_id
+  timestamp_with_time_zone ended_at
+  bigint journey_id PK
+  integer rail_route_id
+  smallint start_station_id
+  timestamp_with_time_zone started_at PK
+  text status
+  timestamp_with_time_zone updated_at
+}
+
+journey_rail_journeys_2026_01 {
+  bigint card_id
+  timestamp_with_time_zone created_at
+  smallint end_station_id
+  timestamp_with_time_zone ended_at
+  bigint journey_id PK
+  integer rail_route_id
+  smallint start_station_id
+  timestamp_with_time_zone started_at PK
+  text status
+  timestamp_with_time_zone updated_at
+}
+
+journey_rail_journeys_2026_02 {
+  bigint card_id
+  timestamp_with_time_zone created_at
+  smallint end_station_id
+  timestamp_with_time_zone ended_at
+  bigint journey_id PK
+  integer rail_route_id
+  smallint start_station_id
+  timestamp_with_time_zone started_at PK
+  text status
+  timestamp_with_time_zone updated_at
+}
+
+journey_rail_journeys_default {
+  bigint card_id
+  timestamp_with_time_zone created_at
+  smallint end_station_id
+  timestamp_with_time_zone ended_at
+  bigint journey_id PK
+  integer rail_route_id
+  smallint start_station_id
+  timestamp_with_time_zone started_at PK
+  text status
+  timestamp_with_time_zone updated_at
+}
+
+ref_rail_route_stations {
+  timestamp_with_time_zone created_at
+  integer route_id PK
+  smallint station_id
+  smallint stop_sequence PK
+  timestamp_with_time_zone updated_at
+}
+
+ref_rail_routes {
+  timestamp_with_time_zone created_at
+  bigint route_id PK
+  character_varying(50) route_name
+  timestamp_with_time_zone updated_at
+}
+
+ref_railpay_card_types {
+  smallint card_type_id PK
+  character_varying(25) card_type_name
+  timestamp_with_time_zone created_at
+  text description
+  boolean is_active
+  timestamp_with_time_zone updated_at
+}
+
+ref_railpay_money {
+  integer base_fare_cents
+  integer capping_fare_cents
+  timestamp_with_time_zone created_at
+  smallint id PK
+  boolean is_zone_1
+  boolean is_zone_2
+  text status_active
+  timestamp_with_time_zone updated_at
+  smallint zone_count
+}
+
+ref_railpay_passes {
+  timestamp_with_time_zone created_at
+  boolean is_zone_1
+  boolean is_zone_2
+  integer monthly_yearly_pass_cents
+  text status_active
+  timestamp_with_time_zone updated_at
+  integer weekly_pass_cents
+  smallint zone_count PK
+}
+
+ref_stations {
+  timestamp_with_time_zone created_at
+  bigint id PK
+  smallint station_id
+  character_varying(25) station_name
+  timestamp_with_time_zone updated_at
+  smallint zone_id
+}
+
+ref_travel_zones {
+  timestamp_with_time_zone created_at
+  text description
+  timestamp_with_time_zone updated_at
+  smallint zone_id PK
+  character_varying(25) zone_name
+}
+
+ref_two_hour_windows {
+  timestamp_with_time_zone created_at
+  interval time_window
+  timestamp_with_time_zone updated_at
+  smallint zone_count PK
+}
+card_rail_cards }o--|| ref_railpay_card_types : "rail_cards_card_type_id_fkey"
+card_rail_passes }o--|| card_rail_cards : "rail_passes_card_id_fkey"
+card_railpass_zones }o--|| card_rail_passes : "railpass_zones_pass_id_fkey"
+card_railpass_zones }o--|| ref_travel_zones : "railpass_zones_zone_id_fkey"
+journey_rail_journey_fares }o--|| journey_rail_journeys : "rail_journey_fares_journey_fk"
+journey_rail_journey_fares }o--|| journey_rail_journeys_2026_01 : "rail_journey_fares_journey_id_journey_started_at_fkey"
+journey_rail_journey_fares }o--|| journey_rail_journeys_2026_02 : "rail_journey_fares_journey_id_journey_started_at_fkey1"
+journey_rail_journey_fares }o--|| journey_rail_journeys_default : "rail_journey_fares_journey_id_journey_started_at_fkey2"
+journey_rail_journey_fares }o--|| ref_travel_zones : "rail_journey_fares_end_zone_fkey"
+journey_rail_journey_fares }o--|| ref_travel_zones : "rail_journey_fares_start_zone_fkey"
+journey_rail_journey_fares_2026_01 }o--|| journey_rail_journeys : "rail_journey_fares_journey_fk"
+journey_rail_journey_fares_2026_01 }o--|| ref_travel_zones : "rail_journey_fares_end_zone_fkey"
+journey_rail_journey_fares_2026_01 }o--|| ref_travel_zones : "rail_journey_fares_start_zone_fkey"
+journey_rail_journey_fares_2026_02 }o--|| journey_rail_journeys : "rail_journey_fares_journey_fk"
+journey_rail_journey_fares_2026_02 }o--|| ref_travel_zones : "rail_journey_fares_end_zone_fkey"
+journey_rail_journey_fares_2026_02 }o--|| ref_travel_zones : "rail_journey_fares_start_zone_fkey"
+journey_rail_journey_fares_default }o--|| journey_rail_journeys : "rail_journey_fares_journey_fk"
+journey_rail_journey_fares_default }o--|| ref_travel_zones : "rail_journey_fares_end_zone_fkey"
+journey_rail_journey_fares_default }o--|| ref_travel_zones : "rail_journey_fares_start_zone_fkey"
+journey_rail_journeys }o--|| card_rail_cards : "rail_journeys_card_id_fkey"
+journey_rail_journeys }o--|| ref_rail_routes : "rail_journeys_rail_route_id_fkey"
+journey_rail_journeys }o--|| ref_stations : "rail_journeys_end_station_id_fkey"
+journey_rail_journeys }o--|| ref_stations : "rail_journeys_start_station_id_fkey"
+journey_rail_journeys_2026_01 }o--|| card_rail_cards : "rail_journeys_card_id_fkey"
+journey_rail_journeys_2026_01 }o--|| ref_rail_routes : "rail_journeys_rail_route_id_fkey"
+journey_rail_journeys_2026_01 }o--|| ref_stations : "rail_journeys_end_station_id_fkey"
+journey_rail_journeys_2026_01 }o--|| ref_stations : "rail_journeys_start_station_id_fkey"
+journey_rail_journeys_2026_02 }o--|| card_rail_cards : "rail_journeys_card_id_fkey"
+journey_rail_journeys_2026_02 }o--|| ref_rail_routes : "rail_journeys_rail_route_id_fkey"
+journey_rail_journeys_2026_02 }o--|| ref_stations : "rail_journeys_end_station_id_fkey"
+journey_rail_journeys_2026_02 }o--|| ref_stations : "rail_journeys_start_station_id_fkey"
+journey_rail_journeys_default }o--|| card_rail_cards : "rail_journeys_card_id_fkey"
+journey_rail_journeys_default }o--|| ref_rail_routes : "rail_journeys_rail_route_id_fkey"
+journey_rail_journeys_default }o--|| ref_stations : "rail_journeys_end_station_id_fkey"
+journey_rail_journeys_default }o--|| ref_stations : "rail_journeys_start_station_id_fkey"
+ref_rail_route_stations }o--|| ref_rail_routes : "rail_route_stations_route_id_fkey"
+ref_rail_route_stations }o--|| ref_stations : "rail_route_stations_id_fkey"
+ref_stations }o--|| ref_travel_zones : "stations_zone_id_fkey"
