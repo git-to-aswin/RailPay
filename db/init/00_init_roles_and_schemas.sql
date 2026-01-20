@@ -39,19 +39,12 @@ REVOKE CREATE ON SCHEMA card, ref, journey, audit FROM railpay_app, railpay_ro, 
 
 -- 5) Default privileges: when railpay_admin creates tables, give proper perms automatically
 
--- App + Dev: read/write (no delete by default; you can enable per-table later)
-ALTER DEFAULT PRIVILEGES FOR ROLE railpay_admin IN SCHEMA ref, journey, audit
+-- App + Dev: read/write for card, journey, audit schemas
+ALTER DEFAULT PRIVILEGES FOR ROLE railpay_admin IN SCHEMA card, journey, audit
   GRANT SELECT, INSERT, UPDATE ON TABLES TO railpay_app, railpay_dev;
 
-ALTER DEFAULT PRIVILEGES FOR ROLE railpay_admin IN SCHEMA ref, journey, audit
+ALTER DEFAULT PRIVILEGES FOR ROLE railpay_admin IN SCHEMA card, journey, audit
   GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO railpay_app, railpay_dev;
-
--- Read-only role
-ALTER DEFAULT PRIVILEGES FOR ROLE railpay_admin IN SCHEMA card, ref, journey, audit
-  GRANT SELECT ON TABLES TO railpay_ro;
-
-ALTER DEFAULT PRIVILEGES FOR ROLE railpay_admin IN SCHEMA card, ref, journey, audit
-  GRANT USAGE, SELECT ON SEQUENCES TO railpay_ro;
 
 -- Ref schema: App + Dev read-only (contains business reference data)
 ALTER DEFAULT PRIVILEGES FOR ROLE railpay_admin IN SCHEMA ref

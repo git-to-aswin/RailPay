@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS card.rail_passes (
   purchased_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
   purchasing_interval INTERVAL NOT NULL
-    CHECK (purchasing_interval > INTERVAL '0 seconds'),
+    CHECK (purchasing_interval = INTERVAL '7 days' OR purchasing_interval > INTERVAL '28 days' 
+           ),
 
   bonus_days SMALLINT NOT NULL DEFAULT 0
     CHECK (bonus_days >= 0 AND bonus_days <= 40),
@@ -58,6 +59,11 @@ RETURNS trigger
 LANGUAGE plpgsql
 AS $$
 BEGIN
+  CASE
+    WHEN NEW.purchasing_interval > INTERVAL '326 days' THEN NEW.bonus_days := 40;
+    ELSE NEW.bonus_days := 0;
+  END CASE;
+
   NEW.valid_to :=
     NEW.valid_from
     + NEW.purchasing_interval
