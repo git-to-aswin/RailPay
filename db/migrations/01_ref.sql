@@ -4,14 +4,14 @@ CREATE SCHEMA IF NOT EXISTS ref;
 -- 1) travel_zone
 CREATE TABLE IF NOT EXISTS ref.travel_zones (
   zone_id SMALLINT PRIMARY KEY,
+  zone_name VARCHAR(25) NOT NULL UNIQUE,
+  description TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- 2) station_zones
 CREATE TABLE IF NOT EXISTS ref.stations (
-  id BIGINT GENERATED ALWAYS AS IDENTITY,
-
   station_id SMALLINT NOT NULL PRIMARY KEY,
   station_name VARCHAR(25) NOT NULL,
   zone_id    SMALLINT NOT NULL REFERENCES ref.travel_zones(zone_id),
@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS ref.stations (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_stations__station_id ON ref.stations(station_id);
+CREATE INDEX IF NOT EXISTS idx_stations__station_id_zone ON ref.stations(station_id, zone_id);
 
 -- 3) two_hour_window
 CREATE TABLE IF NOT EXISTS ref.two_hour_windows (
@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS ref.rail_routes (
 -- 8) route_stations
 CREATE TABLE IF NOT EXISTS ref.rail_route_stations (
   route_id INT NOT NULL REFERENCES ref.rail_routes(route_id) ON DELETE CASCADE,
-  station_id SMALLINT NOT NULL REFERENCES ref.stations(station_id) ON DELETE CASCADE,
+  station_id SMALLINT NOT NULL REFERENCES ref.stations(id) ON DELETE CASCADE,
   stop_sequence SMALLINT NOT NULL,
 
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
