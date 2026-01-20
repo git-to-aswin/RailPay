@@ -1,0 +1,25 @@
+INSERT INTO ref.rail_routes (route_name)
+VALUES
+  ('Alamein Line'),
+  ('Belgrave Line'),
+  ('Craigieburn Line'),
+  ('Cranbourne Line'),
+  ('Flemington Line'),
+  ('Frankston Line'),
+  ('Glen Waverley Line'),
+  ('Hurstbridge Line'),
+  ('Lilydale Line'),
+  ('Mernda Line'),
+  ('Pakenham Line'),
+  ('Sandringham Line'),
+  ('Stony Point Line'),
+  ('Sunbury Line'),
+  ('Upfield Line'),
+  ('Werribee Line'),
+  ('Williamstown Line'),
+  ('Ballarat Line'),
+  ('Bendigo Line'),
+  ('Geelong Line'),
+  ('Gippsland Line'),
+  ('Seymour Line')
+ON CONFLICT (route_name) DO NOTHING;

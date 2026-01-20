@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS ref.two_hour_windows (
 
 -- 4) fare_amount
 CREATE TABLE IF NOT EXISTS ref.railpay_money (
-  zone_count SMALLINT PRIMARY KEY,
+  id SMALLINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  zone_count SMALLINT NOT NULL,
 
   base_fare_cents    INT NOT NULL CHECK (base_fare_cents >= 0),
   capping_fare_cents INT NOT NULL CHECK (capping_fare_cents >= 0),
@@ -57,7 +58,7 @@ CREATE TABLE IF NOT EXISTS ref.railpay_money (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_railpay_money__status_active ON ref.railpay_money(zone_count, is_zone_1, is_zone_2, status_active);
+CREATE UNIQUE INDEX IF NOT EXISTS railpay_money_ctx_uk ON ref.railpay_money (zone_count, is_zone_1, is_zone_2) WHERE status_active = 'active';
 
 -- 5) fare_pass
 CREATE TABLE IF NOT EXISTS ref.railpay_passes (
