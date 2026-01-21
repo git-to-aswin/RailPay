@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION journey.fn_validate_journey(
   p_station_id  SMALLINT,
   p_touched_at  TIMESTAMPTZ DEFAULT NOW()
 )
-RETURNS TABLE (journey_id BIGINT, status TEXT)
+RETURNS TABLE (journey_id BIGINT, status TEXT, start_zone SMALLINT, end_zone SMALLINT, station_row_id SMALLINT)
 LANGUAGE plpgsql
 STABLE
 AS $$
@@ -16,8 +16,8 @@ DECLARE
   v_start_zone  SMALLINT;
   v_curr_zone   SMALLINT;
 
-  v_start_station_row_id BIGINT; -- ref.stations.id (surrogate)
-  v_curr_station_row_id  BIGINT; -- ref.stations.id (surrogate)
+  v_start_station_row_id SMALLINT; -- ref.stations.id (surrogate)
+  v_curr_station_row_id  SMALLINT; -- ref.stations.id (surrogate)
 
   v_zones_travelled SMALLINT;
   v_time_window     INTERVAL;
@@ -37,7 +37,7 @@ BEGIN
   -- No open journey => caller should create a new journey (touch_on)
   IF v_open_journey_id IS NULL THEN
     journey_id := NULL;
-    status := 'closed';
+    status := 'touch_on';
     RETURN NEXT;
     RETURN;
   END IF;
@@ -47,7 +47,7 @@ BEGIN
   -- 2) Same station within 15 minutes => cancel candidate
   IF v_start_station_sid = p_station_id
      AND p_touched_at <= v_started_at + INTERVAL '15 minutes' THEN
-    status := 'cancelled';
+    status := 'same_station_cancellation';
     RETURN NEXT;
     RETURN;
   END IF;
@@ -62,10 +62,10 @@ BEGIN
   WHERE station_id = v_start_station_sid;
 
   IF v_curr_station_row_id IS NULL OR v_start_station_row_id IS NULL THEN
-    status := 'incomplete';
-    RETURN NEXT;
-    RETURN;
+    RAISE EXCEPTION 'Unkown stationID';
   END IF;
+
+  station_row_id := v_curr_station_row_id;
 
   -- 4) Check if both stations are on same route
   v_on_route := EXISTS (
@@ -79,7 +79,7 @@ BEGIN
   );
 
   IF NOT v_on_route THEN
-    status := 'incomplete';
+    status := 'incomplete_trip';
     RETURN NEXT;
     RETURN;
   END IF;
@@ -94,10 +94,11 @@ BEGIN
   WHERE station_id = p_station_id;
 
   IF v_start_zone IS NULL OR v_curr_zone IS NULL THEN
-    status := 'incomplete';
-    RETURN NEXT;
-    RETURN;
+    RAISE EXCEPTION 'Unkown ZONE';
   END IF;
+
+  start_zone := v_start_zone;
+  end_zone := v_curr_zone;
 
   v_zones_travelled := (ABS(v_start_zone - v_curr_zone) + 1)::smallint;
 
@@ -111,7 +112,7 @@ BEGIN
   WHERE zone_count = v_zones_travelled;
 
   IF v_time_window IS NULL THEN
-    status := 'incomplete';
+    status := 'incomplete_trip';
     RETURN NEXT;
     RETURN;
   END IF;
@@ -119,9 +120,9 @@ BEGIN
   v_elapsed := p_touched_at - v_started_at;
 
   IF v_elapsed <= v_time_window THEN
-    status := 'tap_off';
+    status := 'touch_off';
   ELSE
-    status := 'incomplete';
+    status := 'incomplete_trip';
   END IF;
 
   RETURN NEXT;
